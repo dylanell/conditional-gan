@@ -199,8 +199,9 @@ def main():
                 x_grid = make_grid(x_sample, nrow=num_class)
 
                 # save image
+                step = (e * (int(len(dataset_dct['train_set'] / batch_size) + 1)) + (i + 1))
                 save_image(x_grid, '{}{}_step_{}.png'.format(
-                    out_dir, model_name, i+1))
+                    out_dir, model_name, step))
 
         # end epoch
 
