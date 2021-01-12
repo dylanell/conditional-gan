@@ -3,13 +3,13 @@ output_directory: 'artifacts/'
 model_name: 'wgan'
 acceleration: True
 number_workers: 4
-output_frequency: 100
+output_frequency: 200
 number_classes: 10
 input_dimensions: !!python/tuple
 - 32
 - 32
 - 1
 batch_size: 64
-number_epochs: 20
+number_epochs: 50
 learning_rate: 0.001
 z_dimension: 128
