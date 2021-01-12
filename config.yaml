@@ -1,0 +1,14 @@
+dataset_directory: '/home/dylan/datasets/mnist_png/'
+output_directory: '/home/dylan/model_files/conditional_wgan/'
+model_name: 'wgan'
+acceleration: True
+number_classes: 10
+input_dimensions: !!python/tuple
+- 32
+- 32
+- 1
+batch_size: 64
+number_epochs: 20
+learning_rate: 0.001
+z_dimension: 128
+number_workers: 1
