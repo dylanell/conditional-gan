@@ -1,4 +1,4 @@
-dataset_directory: '/home/dylan/datasets/mnist_png/'
+dataset_directory: '/wheatley/dylan/datasets/mnist_png/'
 output_directory: 'artifacts/'
 model_name: 'wgan'
 acceleration: True
