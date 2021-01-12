@@ -20,6 +20,7 @@ with open('config.yaml', 'r') as fp:
 data_dir = config['dataset_directory']
 out_dir = config['output_directory']
 model_name = config['model_name']
+acceleration = config['acceleration']
 num_work = config['number_workers']
 out_freq = config['output_frequency']
 num_class = config['number_classes']
@@ -39,8 +40,7 @@ def main():
 
     # try to get gpu device, if not just use cpu
     device = torch.device(
-        'cuda:0' if torch.cuda.is_available() and config['acceleration']
-        else 'cpu')
+        'cuda:0' if torch.cuda.is_available() and acceleration else 'cpu')
     print('[INFO]: using \'{}\' device'.format(device))
 
     # create image datasets/dataloaders
@@ -181,7 +181,7 @@ def main():
                 real_classifier_loss.backward()
                 classifier_opt.step()
 
-                # update just the critic and classifier
+                # update critic
                 critic_opt.zero_grad()
                 critic_loss.backward()
                 critic_opt.step()
