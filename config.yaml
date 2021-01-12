@@ -2,6 +2,8 @@ dataset_directory: '/home/dylan/datasets/mnist_png/'
 output_directory: 'artifacts/'
 model_name: 'wgan'
 acceleration: True
+number_workers: 4
+output_frequency: 100
 number_classes: 10
 input_dimensions: !!python/tuple
 - 32
@@ -11,4 +13,3 @@ batch_size: 64
 number_epochs: 20
 learning_rate: 0.001
 z_dimension: 128
-number_workers: 1

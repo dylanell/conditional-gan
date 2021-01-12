@@ -6,25 +6,36 @@ import torch
 import yaml
 import time
 from torchvision.utils import make_grid, save_image
+import glob
+import imageio
+import os
 
 from util.data_pipeline import process_image_dataset
 from modules import Critic, ConditionalGenerator, Classifier
 
-def main():
-    # parse config
-    with open('config.yaml', 'r') as fp:
-        config = yaml.load(fp, Loader=yaml.FullLoader)
+# parse config
+with open('config.yaml', 'r') as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
 
-    data_dir = config['dataset_directory']
-    out_dir = config['output_directory']
-    model_name = config['model_name']
-    num_class = config['number_classes']
-    input_dim = config['input_dimensions']
-    batch_size = config['batch_size']
-    num_epoch = config['number_epochs']
-    learn_rate = config['learning_rate']
-    z_dim = config['z_dimension']
-    num_work = config['number_workers']
+data_dir = config['dataset_directory']
+out_dir = config['output_directory']
+model_name = config['model_name']
+num_work = config['number_workers']
+out_freq = config['output_frequency']
+num_class = config['number_classes']
+input_dim = config['input_dimensions']
+batch_size = config['batch_size']
+num_epoch = config['number_epochs']
+learn_rate = config['learning_rate']
+z_dim = config['z_dimension']
+
+def main():
+    """
+    Build and train the model.
+    """
+
+    # number of different styles to generate for output samples
+    num_styles = 10
 
     # try to get gpu device, if not just use cpu
     device = torch.device(
@@ -72,6 +83,15 @@ def main():
 
     # cross entropy loss for classifier
     classifier_loss_fn = torch.nn.CrossEntropyLoss()
+
+    # sample num_styles from z and repeat interleave rows for num_class
+    # this will be a static sample to watch progress
+    z_static = z_dist.sample()[:num_styles].to(device)
+    z_static = torch.repeat_interleave(z_static, num_class, dim=0)
+
+    # create num_styles copies of num_class identity array
+    # this can be used as a static sample throughout the training script
+    y_static = torch.eye(num_class).repeat(num_styles, 1).to(device)
 
     # run through epochs
     for e in range(num_epoch):
@@ -170,6 +190,18 @@ def main():
             wass_dist_acc += wass_dist.item()
             classifier_loss_acc += real_classifier_loss.item()
 
+            # every out_freq steps, save static generator image
+            if i % out_freq == out_freq - 1:
+                # generate 10 styles of 1-num_class from static z
+                x_sample = generator(z_static, y_static)
+
+                # reshape into 10xnum_class image
+                x_grid = make_grid(x_sample, nrow=num_class)
+
+                # save image
+                save_image(x_grid, '{}{}_step_{}.png'.format(
+                    out_dir, model_name, i+1))
+
         # end epoch
 
         # compute epoch time
@@ -184,25 +216,44 @@ def main():
                    'Wasserstein Distance: {:.4f}, Classifier Loss: {:.4f}'
         print(template.format(e + 1, epoch_time, wass_dist, classifier_loss))
 
-        # number of different styles to generate
-        num_styles = 8
-
         # sample num_styles from z and repeat interleave rows for num_class
         z_sample = z_dist.sample()[:num_styles].to(device)
-        z_stack = torch.repeat_interleave(z_sample, num_class, dim=0)
+        z_sample = torch.repeat_interleave(z_sample, num_class, dim=0)
 
-        # create num_styles copies of num_class identity array
-        y_stack = torch.eye(num_class).repeat(num_styles, 1).to(device)
-
-        # generate 10 styles of 1-num_class
-        x_stack = generator(z_stack, y_stack)
+        # generate 10 styles of 1-num_class from random z
+        x_sample = generator(z_sample, y_static)
 
         # reshape into 10xnum_class image
-        b, c, h, w = x_stack.shape
-        x_grid = make_grid(x_stack, nrow=num_class)
+        x_grid = make_grid(x_sample, nrow=num_class)
 
         # save image
-        save_image(x_grid, '{}epoch_{}.png'.format(out_dir, e+1))
+        save_image(x_grid, '{}{}_epoch_{}.png'.format(
+            out_dir, model_name, e+1))
+
+
+def cleanup():
+    """
+    Build gif from statically generated outputs then remove images.
+    """
+
+    # get all images that match wildcard string to make gif
+    gif_files = glob.glob('{}{}_step_*.png'.format(out_dir, model_name))
+
+    # sort filenames by numbers
+    gif_files.sort(key=lambda f: int(f.split('_')[-1].split('.')[0]))
+
+    # create list of image objects
+    img_list = [imageio.imread(img) for img in gif_files]
+
+    # write image list to gif
+    imageio.mimwrite(
+        '{}{}_gen.gif'.format(out_dir, model_name), img_list, fps=200)
+
+    # delete files used to make gif
+    for file in gif_files:
+        os.remove(file)
+
 
 if __name__ == '__main__':
     main()
+    cleanup()
