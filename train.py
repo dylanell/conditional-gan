@@ -109,6 +109,12 @@ def main():
         [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
         dim=0).repeat(num_styles, 1).to(device)
 
+    static_labels = {i: [] for i in range(num_class+num_multi_hot)}
+    samples, labels = torch.where(y_static[:num_class+num_multi_hot] != 0)
+    for sample, label in zip(samples, labels):
+        static_labels[sample.item()].append(label.item())
+    print('[INFO]: static labels: {}'.format(static_labels))
+
     # run through epochs
     for e in range(num_epoch):
         # get epoch start time
