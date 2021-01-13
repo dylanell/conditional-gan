@@ -68,17 +68,17 @@ def main():
         torch.zeros(batch_size, z_dim),
         torch.ones(batch_size, z_dim))
 
-    # STANDARD CONDITIONAL GAN #
-    # initialize one-hot categorical distribution to sample generator class
-    y_dist = torch.distributions.one_hot_categorical.OneHotCategorical(
-        (1./float(num_class)) * torch.ones(batch_size, num_class))
+    # # STANDARD CONDITIONAL GAN #
+    # # initialize one-hot categorical distribution to sample generator class
+    # y_dist = torch.distributions.one_hot_categorical.OneHotCategorical(
+    #     (1./float(num_class)) * torch.ones(batch_size, num_class))
 
-    # # 'CREATIVE' CONDITIONAL GAN #
-    # # intialize a 'multi-hot' categorical meta distribution to sample
-    # # generator 'multi-classes' and encourage not only correctly classified
-    # # novel samples, but also samples that 'confuse' the classifier.
-    # y_dist = MetaMultiHotCategorical(batch_size, num_class, num_class)
-
+    # 'CREATIVE' CONDITIONAL GAN #
+    # intialize a 'multi-hot' categorical meta distribution to sample
+    # generator 'multi-classes' and encourage not only correctly classified
+    # novel samples, but also samples that 'confuse' the classifier.
+    y_dist = MetaMultiHotCategorical(batch_size, num_class, pan=0.2)
+    
     # initialize uniform distribution to sample eps vals for img interpolations
     eps_dist = torch.distributions.uniform.Uniform(
         torch.zeros(batch_size, 1, 1, 1),
