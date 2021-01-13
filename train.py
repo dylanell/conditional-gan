@@ -30,6 +30,7 @@ batch_size = config['batch_size']
 num_epoch = config['number_epochs']
 learn_rate = config['learning_rate']
 z_dim = config['z_dimension']
+pan = config['pan_classness']
 
 def main():
     """
@@ -77,8 +78,8 @@ def main():
     # intialize a 'multi-hot' categorical meta distribution to sample
     # generator 'multi-classes' and encourage not only correctly classified
     # novel samples, but also samples that 'confuse' the classifier.
-    y_dist = MetaMultiHotCategorical(batch_size, num_class, pan=0.2)
-    
+    y_dist = MetaMultiHotCategorical(batch_size, num_class, pan=pan)
+
     # initialize uniform distribution to sample eps vals for img interpolations
     eps_dist = torch.distributions.uniform.Uniform(
         torch.zeros(batch_size, 1, 1, 1),

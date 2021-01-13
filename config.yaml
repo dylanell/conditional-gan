@@ -1,4 +1,4 @@
-dataset_directory: '/wheatley/dylan/datasets/mnist_png/'
+dataset_directory: '/home/dylan/datasets/mnist_png/'
 output_directory: 'artifacts/'
 model_name: 'wgan'
 acceleration: True
@@ -10,6 +10,7 @@ input_dimensions: !!python/tuple
 - 32
 - 1
 batch_size: 64
-number_epochs: 50
+number_epochs: 100
 learning_rate: 0.001
 z_dimension: 128
+pan_classness: 0.2
