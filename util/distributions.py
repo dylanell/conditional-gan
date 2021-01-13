@@ -11,7 +11,7 @@ class MetaMultiHotCategorical():
     distributions. This is a probability distribution to draw samples of
     another probability distribution. Given 'n', the number of unique labels
     for the multi-hot categorical distributions, and 'k', the maximum number of
-    labels each sample from the multi-hot categorical distribution can have, 
+    labels each sample from the multi-hot categorical distribution can have,
     the MetaMultiHotCategorical distribution will produce samples consisting of
     'size' vectors of multi-hot categorical distributions of dimension 'n' in
     which 1 to k indices (sampled uniformly) will be non-zero and scaled such
@@ -33,7 +33,7 @@ class MetaMultiHotCategorical():
 
         # construct num_sample multi-hot vectors from sampled indices
         multi_hots = torch.zeros(self._size, self._n)
-        for i, (idx_sample, k_sample) in enumerate(zip(idx_samples, k_samples)):
-            multi_hots[i, idx_sample] = 1/k_sample
+        for i, (idx_s, k_s) in enumerate(zip(idx_samples, k_samples)):
+            multi_hots[i, idx_s] = 1/k_s
 
         return multi_hots
