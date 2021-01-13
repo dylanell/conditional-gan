@@ -8,7 +8,22 @@ from torch.distributions.categorical import Categorical
 class MetaMultiHotCategorical():
     def __init__(self, batch_size, num_class, pan=0.5):
         """
-        Bernoulli success probability p to parameterize a bound-modified bernoulli-like distribution for sampling 'multi-class' labels. Computation of p is dependent on 'pan-classness' parameter 'pan'. When 'pan' is 0.0, meaning no 'pan-classness', bernoulli success probabily will be 1, resulting in only 'single-class' labels (i.e. a 100% probability of selecting 1 class). When 'pan' is 1.0, meaning full 'pan-classness', bernoulli success probabily will be N^(-2), resulting in small but nearly uniform probabilities for selectiing 'multi-class' labels in the range 1-(N-1). The probability mass from the remaining unbounded tail of the bernoulli distribution is summed for the probability at x=N, resuting in a distribution that strongly favors selecting 'all-N-class' labels when 'pan' is 1.0. When pan is 0.5, this results in a more balanced distribution of selecting 'multi-class' labels in the range 1-N. Therefore as the value of pan increases from 0-1, the probability of selecting samples that simultaneously belong to more classes increases.
+        Bernoulli success probability p to parameterize a bound-modified
+        geometric-like distribution for sampling 'multi-class' labels.
+        Computation of p is dependent on 'pan-classness' parameter 'pan'. When
+        'pan' is 0.0, meaning no 'pan-classness', bernoulli success probabily
+        will be 1, resulting in only 'single-class' labels (i.e. a 100%
+        probability of selecting 1 class). When 'pan' is 1.0, meaning full 'pan-
+        classness', bernoulli success probabily will be N^(-2), resulting in
+        small but nearly uniform probabilities for selectiing 'multi-class'
+        labels in the range 1-(N-1). The probability mass from the remaining
+        unbounded tail of the bernoulli distribution is summed for the
+        probability at x=N, resuting in a distribution that strongly favors
+        selecting 'all-N-class' labels when 'pan' is 1.0. When pan is 0.5, this
+        results in a more balanced distribution of selecting 'multi-class'
+        labels in the range 1-N. Therefore as the value of pan increases from 0-
+        1, the probability of selecting samples that simultaneously belong to
+        more classes increases.
         """
 
         # compute bernoulli success probability from pan-classness strength
