@@ -37,9 +37,6 @@ def main():
     Build and train the model.
     """
 
-    # number of different styles to generate for output samples
-    num_styles = 10
-
     # try to get gpu device, if not just use cpu
     device = torch.device(
         'cuda:0' if torch.cuda.is_available() and acceleration else 'cpu')
@@ -93,14 +90,24 @@ def main():
     # cross entropy loss for classifier
     classifier_loss_fn = torch.nn.CrossEntropyLoss()
 
-    # sample num_styles from z and repeat interleave rows for num_class
-    # this will be a static sample to watch progress
-    z_static = z_dist.sample()[:num_styles].to(device)
-    z_static = torch.repeat_interleave(z_static, num_class, dim=0)
+    # number of styles to generate
+    num_styles = 10
 
-    # create num_styles copies of num_class identity array
+    # number of 'multi-hot' labels to generate in addition to all 'one-hot'
+    # labels in 1-num_class
+    num_multi_hot = 10
+
+    # sample num_styles from z and repeat interleave rows for all labels
+    # this will be a static sample to watch progress of constant samples
+    z_static = z_dist.sample()[:num_styles].to(device)
+    z_static = torch.repeat_interleave(
+        z_static, num_class+num_multi_hot, dim=0)
+
+    # create num_styles copies of static one-hot and multi-hot vectors
     # this can be used as a static sample throughout the training script
-    y_static = torch.eye(num_class).repeat(num_styles, 1).to(device)
+    y_static = torch.cat(
+        [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
+        dim=0).repeat(num_styles, 1).to(device)
 
     # run through epochs
     for e in range(num_epoch):
@@ -205,7 +212,7 @@ def main():
                 x_sample = generator(z_static, y_static)
 
                 # reshape into 10xnum_class image
-                x_grid = make_grid(x_sample, nrow=num_class)
+                x_grid = make_grid(x_sample, nrow=num_class+num_multi_hot)
 
                 # save image
                 step = e * (int(len(dataset_dct['train_set']) / batch_size)\
@@ -227,15 +234,21 @@ def main():
                    'Wasserstein Distance: {:.4f}, Classifier Loss: {:.4f}'
         print(template.format(e + 1, epoch_time, wass_dist, classifier_loss))
 
-        # sample num_styles from z and repeat interleave rows for num_class
+        # sample num_styles from z and repeat interleave rows for all labels
         z_sample = z_dist.sample()[:num_styles].to(device)
-        z_sample = torch.repeat_interleave(z_sample, num_class, dim=0)
+        z_sample = torch.repeat_interleave(
+            z_sample, num_class+num_multi_hot, dim=0)
 
-        # generate 10 styles of 1-num_class from random z
-        x_sample = generator(z_sample, y_static)
+        # sample all one-hot labels and new multi-class labels
+        y_sample = torch.cat(
+            [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
+            dim=0).repeat(num_styles, 1).to(device)
+
+        # generate 10 styles of from random z for each class in y_sample
+        x_sample = generator(z_sample, y_sample)
 
         # reshape into 10xnum_class image
-        x_grid = make_grid(x_sample, nrow=num_class)
+        x_grid = make_grid(x_sample, nrow=num_class+num_multi_hot)
 
         # save image
         save_image(x_grid, '{}{}_epoch_{}.png'.format(
