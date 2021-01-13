@@ -61,6 +61,5 @@ The training script will save images of generated samples to the output director
 
 ### References:
 
-1. Wasserstein GAN:
-
- - https://arxiv.org/pdf/1704.00028.pdf
+1. [Improved Wasserstein GAN](https://arxiv.org/pdf/1704.00028.pdf)
+2. [Creative Adversarial Network (CAN)](https://arxiv.org/pdf/1706.07068.pdf)

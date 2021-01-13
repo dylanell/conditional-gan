@@ -12,6 +12,7 @@ import os
 
 from util.data_pipeline import process_image_dataset
 from modules import Critic, ConditionalGenerator, Classifier
+from util.distributions import MetaMultiHotCategorical
 
 # parse config
 with open('config.yaml', 'r') as fp:
@@ -67,9 +68,16 @@ def main():
         torch.zeros(batch_size, z_dim),
         torch.ones(batch_size, z_dim))
 
+    # STANDARD CONDITIONAL GAN #
     # initialize one-hot categorical distribution to sample generator class
     y_dist = torch.distributions.one_hot_categorical.OneHotCategorical(
         (1./float(num_class)) * torch.ones(batch_size, num_class))
+
+    # # 'CREATIVE' CONDITIONAL GAN #
+    # # intialize a 'multi-hot' categorical meta distribution to sample
+    # # generator 'multi-classes' and encourage not only correctly classified
+    # # novel samples, but also samples that 'confuse' the classifier.
+    # y_dist = MetaMultiHotCategorical(batch_size, num_class, num_class)
 
     # initialize uniform distribution to sample eps vals for img interpolations
     eps_dist = torch.distributions.uniform.Uniform(
