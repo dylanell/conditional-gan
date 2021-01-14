@@ -2,9 +2,9 @@
 
 PyTorch implementation of Conditional [Improved Wasserstein Generative Adversarial Network (GAN)](https://arxiv.org/pdf/1704.00028.pdf) on the [MNIST Dataset](http://yann.lecun.com/exdb/mnist/). The conditional GAN introduces a one-hot vector that is also provided as input to the generator of the GAN along with the original z input sample from the multivariate normal distribution. This additional one-hot vector takes on the role of encoding the "class" for the sample to be generated while the z vector controls the "style". Therefore, by individually altering the z vector or the one-hot vector provided to the generator, one can control the "style" and the "label" for generated samples, respectively.
 
-| ![](artifacts/cgan_pan_02_gen.gif) |
+| ![](artifacts/readme_gen.gif) |
 | :-: |
-| *Some generator outputs during training with each column corresponding to a conditioned digit class in [0-9]* |
+| *Generator outputs with constant inputs during training. Column labels can be found in `readme_gen_gif_cols.txt`* |
 
 ### Environment:
 
