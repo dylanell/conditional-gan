@@ -280,6 +280,14 @@ def main():
             save_image(x_grid, '{}{}_epoch_{}.png'.format(
                 out_dir, model_name, e+1))
 
+        # save checkpoints
+        torch.save(critic.state_dict(), '{}{}_critic.pt'.format(
+            out_dir, model_name))
+        torch.save(generator.state_dict(), '{}{}_generator.pt'.format(
+            out_dir, model_name))
+        torch.save(classifier.state_dict(), '{}{}_classifier.pt'.format(
+            out_dir, model_name))
+
 
 def cleanup():
     """
