@@ -32,7 +32,7 @@ class TailBoostedMetaMultiHotCategorical():
         # compute modified geometric distribution with p success probability
         # and adding cumulative probability at (N+1)-inf to probability at N to
         # create bounded distribution on [1-N]
-        probs = torch.tensor([p * ((1 -p)**i) for i in range(num_class - 1)])
+        probs = torch.tensor([p * ((1 - p)**i) for i in range(num_class - 1)])
         probs = torch.cat([probs, 1 - torch.sum(probs, dim=0, keepdim=True)])
 
         # construct a categorical distribution with the probability values
@@ -84,11 +84,11 @@ class MixedMetaMultiHotCategorical():
 
         # geometric distibution from 1-num_class
         one_hot_probs = torch.tensor(
-            [p * ((1 -p)**i) for i in range(num_class)])
+            [p * ((1 - p)**i) for i in range(num_class)])
 
         # reversed geometric distibution from 1-num_class
         multi_hot_probs = torch.tensor(
-            [p * ((1 -p)**i) for i in range(num_class)][::-1])
+            [p * ((1 - p)**i) for i in range(num_class)][::-1])
 
         # mix probabilities with exponential smoothing with 'pan'
         # pan=0, low 'pan-classness' therefore all one_hot_probs
