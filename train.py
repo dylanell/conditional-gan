@@ -12,7 +12,7 @@ import os
 
 from util.data_pipeline import process_image_dataset
 from modules import Critic, ConditionalGenerator, Classifier
-from util.distributions import MetaMultiHotCategorical
+from util.distributions import MixedMetaMultiHotCategorical
 
 # parse config
 with open('config.yaml', 'r') as fp:
@@ -75,7 +75,7 @@ def main():
     # intialize a 'multi-hot' categorical meta distribution to sample
     # generator 'multi-classes' and encourage not only correctly classified
     # novel samples, but also samples that 'confuse' the classifier.
-    y_dist = MetaMultiHotCategorical(batch_size, num_class, pan=pan)
+    y_dist = MixedMetaMultiHotCategorical(batch_size, num_class, pan=pan)
 
     # initialize uniform distribution to sample eps vals for img interpolations
     eps_dist = torch.distributions.uniform.Uniform(
@@ -103,11 +103,25 @@ def main():
     z_static = torch.repeat_interleave(
         z_static, num_class+num_multi_hot, dim=0)
 
+    # create randomly sampled static two-hot vector for training visualization
+    two_y = torch.cat(
+        [torch.randperm(num_class)[:2].unsqueeze(0) \
+        for i in range(num_multi_hot)], dim=0)
+    two_hot = torch.zeros(num_multi_hot, num_class)
+    for i, row in enumerate(two_y):
+        two_hot[i, row] = 0.5
+
     # create num_styles copies of static one-hot and multi-hot vectors
     # this can be used as a static sample throughout the training script
     y_static = torch.cat(
-        [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
+        [torch.eye(num_class), two_hot],
         dim=0).repeat(num_styles, 1).to(device)
+
+    # # create num_styles copies of static one-hot and multi-hot vectors
+    # # this can be used as a static sample throughout the training script
+    # y_static = torch.cat(
+    #     [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
+    #     dim=0).repeat(num_styles, 1).to(device)
 
     static_labels = {i: [] for i in range(num_class+num_multi_hot)}
     samples, labels = torch.where(y_static[:num_class+num_multi_hot] != 0)
