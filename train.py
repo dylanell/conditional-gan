@@ -129,7 +129,7 @@ def main():
     for sample, label in zip(samples, labels):
         static_labels[sample.item()].append(label.item())
     print('[INFO]: static labels: {}'.format(static_labels))
-    with open('{}{}_gif_labels.txt'.format(out_dir, model_name), 'w') as fp:
+    with open('{}{}_gif_cols.txt'.format(out_dir, model_name), 'w') as fp:
         for col, label in static_labels.items():
             fp.write('{}: {}\n'.format(col, label))
 
