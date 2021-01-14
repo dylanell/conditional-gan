@@ -123,11 +123,15 @@ def main():
     #     [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
     #     dim=0).repeat(num_styles, 1).to(device)
 
+    # save static labels to output directory for referencing output gif
     static_labels = {i: [] for i in range(num_class+num_multi_hot)}
     samples, labels = torch.where(y_static[:num_class+num_multi_hot] != 0)
     for sample, label in zip(samples, labels):
         static_labels[sample.item()].append(label.item())
     print('[INFO]: static labels: {}'.format(static_labels))
+    with open('{}{}_gif_labels.txt'.format(out_dir, model_name), 'w') as fp:
+        for col, label in static_labels.items():
+            fp.write('{}: {}\n'.format(col, label))
 
     # run through epochs
     for e in range(num_epoch):
