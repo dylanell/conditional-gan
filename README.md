@@ -4,7 +4,7 @@ PyTorch implementation of Conditional [Improved Wasserstein Generative Adversari
 
 | ![](artifacts/readme_gen.gif) |
 | :-: |
-| *Generator outputs with constant inputs during training. Column labels can be found in `readme_gen_gif_cols.txt`* |
+| *Generator outputs with constant inputs during training. Column labels can be found in [`readme_gen_gif_cols.txt`](https://github.com/dylanell/conditional-gan/blob/main/artifacts/readme_gen_gif_cols.txt)* |
 
 ### Environment:
 
