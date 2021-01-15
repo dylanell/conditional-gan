@@ -61,7 +61,7 @@ The training script will save images of generated samples to the output director
 
 ### Serving:
 
-This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. To spin up the server application locally using [`uvicorn`](https://www.uvicorn.org/), run the following command from within the `app/` directory in this project:
+This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. To spin up the server application locally using [Uvicorn](https://www.uvicorn.org/), run the following command from within the `app/` directory in this project:
 
 ```
 $ uvicorn main:app --reload
