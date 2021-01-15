@@ -33,7 +33,7 @@ def get_summary_dict():
     return generator_wrapper.get_summary_dict()
 
 @app.post('/api/generate-image')
-def generate_image(labels: List[int]):
+def generate_image(labels: List[float]):
     generator_wrapper.generate_image(labels, media_type='image/png')
     return FileResponse('gen_out.png', media_type='image/png')
 
