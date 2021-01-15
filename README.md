@@ -59,6 +59,18 @@ $ python train.py
 
 The training script will save images of generated samples to the output directory and use many of these images to produce a GIF after which they will be deleted.
 
+### Serving:
+
+This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. To spin up the server application locally using [`uvicorn`](https://www.uvicorn.org/), run the following command from within the `app/` directory in this project:
+
+```
+$ uvicorn main:app --reload
+```
+
+You can view interactive API documentation to see available endpoints at [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs).
+
+When using the [`http://127.0.0.1:8000/api/generate`](`http://127.0.0.1:8000/api/generate`) endpoint to perform inference, the server application uses a `*_generator.pt` model artifact (written to the `artifacts/` directory after running the training script) to load a pre-trained generator model, computes an output given a style and label vector, writes this output locally as an image file, and returns this image file as a [`fastapi.response.FileResponse`](https://fastapi.tiangolo.com/advanced/custom-response/#fileresponse) back to the client.  
+
 ### References:
 
 1. [Improved Wasserstein GAN](https://arxiv.org/pdf/1704.00028.pdf)
