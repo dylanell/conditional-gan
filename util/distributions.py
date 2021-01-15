@@ -46,8 +46,7 @@ class MixedMetaMultiHotCategorical():
         # mix probabilities with exponential smoothing with 'pan'
         # pan=0, low 'pan-classness' therefore favor one_hot_probs
         # pan=1, high 'pan-classness' therefore favor multi_hot_probs
-        # rescale mixed probs to valid probability distribution while adding
-        # small value to avoid
+        # rescale mixed probs to valid probability distribution
         mixed_probs = ((1 - pan) * one_hot_probs) + (pan * multi_hot_probs)
         probs = mixed_probs / torch.sum(mixed_probs)
 
