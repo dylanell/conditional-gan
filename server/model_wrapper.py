@@ -57,7 +57,7 @@ class GeneratorWrapper():
         gen_out = self._generator(self._style_vec, label_vec)[0]
 
         # save generated sample to image file
-        if media_type == 'image/png':
-            save_image(gen_out, 'gen_out.png')
+        if media_type == 'image/jpg':
+            save_image(gen_out, 'gen_out.jpg')
         else:
             save_image(gen_out, 'gen_out.png')
