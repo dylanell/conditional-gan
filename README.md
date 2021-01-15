@@ -61,15 +61,15 @@ The training script will save images of generated samples to the output director
 
 ### Serving:
 
-This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. To spin up the server application locally using [Uvicorn](https://www.uvicorn.org/), run the following command from within the `app/` directory in this project:
+This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. To spin up the server application on port 8080, run the `main.py` script from within the `app/` directory in this project with:
 
 ```
-$ uvicorn main:app --reload
+$ python main.py
 ```
 
-You can view interactive API documentation to see available endpoints at [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs).
+You can view interactive API documentation to see available endpoints at [`http://localhost:8080/docs`](http://localhost:8080/docs).
 
-When using the [`http://127.0.0.1:8000/api/generate`](`http://127.0.0.1:8000/api/generate`) endpoint to perform inference, the server application uses a `*_generator.pt` model artifact (written to the `artifacts/` directory after running the training script) to load a pre-trained generator model, computes an output given a style and label vector, writes this output locally as an image file, and returns this image file as a [`fastapi.response.FileResponse`](https://fastapi.tiangolo.com/advanced/custom-response/#fileresponse) back to the client.  
+When using the `/api/generate-image` endpoint, the server application uses a `*_generator.pt` model artifact (written to the `artifacts/` directory after running the training script) to load a pre-trained generator model, computes an output given a style and label vector, writes this output locally as an image file, and returns this image file as a [`fastapi.response.FileResponse`](https://fastapi.tiangolo.com/advanced/custom-response/#fileresponse) back to the client.  
 
 ### References:
 
