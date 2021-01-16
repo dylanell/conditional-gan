@@ -39,6 +39,6 @@ async def sample_new_style():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', type=int, help='port number')
+    parser.add_argument('-p', type=int, default=8080, help='port number')
     args = parser.parse_args()
     uvicorn.run('main:app', host='localhost', port=args.p, reload=False)
