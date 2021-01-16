@@ -1,5 +1,5 @@
 dataset_directory: '/home/dylan/datasets/mnist_png/'
-output_directory: 'artifacts/'
+output_directory: './artifacts/'
 model_name: 'pan_02'
 acceleration: True
 number_workers: 4

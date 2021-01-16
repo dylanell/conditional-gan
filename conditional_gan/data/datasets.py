@@ -1,5 +1,5 @@
 """
-PyTorch dataset class for an image dataset.
+torch.utils.data.Dataset classes.
 Reference:
     https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 """

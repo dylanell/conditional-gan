@@ -10,7 +10,7 @@ import glob
 import imageio
 import os
 
-from util.data_pipeline import process_image_dataset
+from data.pipeline import process_image_dataset
 from modules import Critic, ConditionalGenerator, Classifier
 from util.distributions import MixedMetaMultiHotCategorical
 

@@ -1,5 +1,5 @@
 """
-Dataset pipeline utilities.
+Data pipeline utilities.
 """
 
 import pandas as pd
@@ -7,7 +7,7 @@ import torch
 import torchvision
 from torchvision.transforms import transforms
 
-from util.image_dataset import ImageDataset
+from data.datasets import ImageDataset
 
 
 # Construct pytorch dataset and dataloader for the training/testing data within
