@@ -1,6 +1,6 @@
 dataset_directory: '/home/dylan/datasets/mnist_png/'
 output_directory: 'artifacts/'
-model_name: 'pan_05'
+model_name: 'pan_02'
 acceleration: True
 number_workers: 4
 output_frequency: 200
@@ -13,4 +13,4 @@ batch_size: 64
 number_epochs: 100
 learning_rate: 0.001
 z_dimension: 128
-pan_classness: 0.5
+pan_classness: 0.2
