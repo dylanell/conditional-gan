@@ -4,6 +4,7 @@ Launches a serving API for a pre-trained generator model.
 
 
 import yaml
+import argparse
 from typing import List
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -37,4 +38,7 @@ async def sample_new_style():
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='localhost', port=8080, reload=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', type=int, help='port number')
+    args = parser.parse_args()
+    uvicorn.run('main:app', host='localhost', port=args.p, reload=False)
