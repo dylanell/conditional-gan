@@ -1,5 +1,5 @@
 """
-Launches a serving API for a pre-trained generator model.
+Model serving API with FastAPI.
 """
 
 
@@ -41,4 +41,4 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', type=int, default=8080, help='port number')
     args = parser.parse_args()
-    uvicorn.run('main:app', host='localhost', port=args.p, reload=False)
+    uvicorn.run('api:app', host='localhost', port=args.p, reload=False)
