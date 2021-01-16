@@ -10,7 +10,7 @@ import sys
 # append parent directory
 sys.path.append('..')
 
-from modules import ConditionalGenerator
+from conditional_gan.modules import ConditionalGenerator
 
 
 class GeneratorWrapper():
@@ -22,7 +22,7 @@ class GeneratorWrapper():
         z_dim = config['z_dimension']
 
         # model artifact file path
-        model_file = '../{}{}_generator.pt'.format(out_dir, model_name)
+        model_file = '../conditional_gan/{}{}_generator.pt'.format(out_dir, model_name)
 
         # initialize and load model
         self._generator = ConditionalGenerator(z_dim, num_class, input_dim[-1])

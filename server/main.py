@@ -4,14 +4,16 @@ Launches a serving API for a pre-trained generator model.
 
 
 import yaml
-from model_wrapper import GeneratorWrapper
 from typing import List
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import uvicorn
 
+from wrappers import GeneratorWrapper
+
+
 # parse configuration file
-with open('../config.yaml', 'r') as fp:
+with open('../conditional_gan/config.yaml', 'r') as fp:
     config = yaml.load(fp, Loader=yaml.FullLoader)
 
 # create generator wrapper with config params
