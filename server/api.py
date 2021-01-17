@@ -4,7 +4,6 @@ Model serving API with FastAPI.
 
 
 import yaml
-import argparse
 from typing import List
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -38,7 +37,4 @@ async def sample_new_style():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-p', type=int, default=8080, help='port number')
-    args = parser.parse_args()
-    uvicorn.run('api:app', host='localhost', port=args.p, reload=False)
+    uvicorn.run('api:app', host='0.0.0.0', port=8080, reload=False)
