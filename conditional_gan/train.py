@@ -258,27 +258,27 @@ def main():
                    'Wasserstein Distance: {:.4f}, Classifier Loss: {:.4f}'
         print(template.format(e + 1, epoch_time, wass_dist, classifier_loss))
 
-        # create random generator images for only the last few epochs
-        if (e + 1) > (num_epoch - 10):
-            # sample num_styles from z and repeat interleave rows for all labels
-            z_sample = z_dist.sample()[:num_styles].to(device)
-            z_sample = torch.repeat_interleave(
-                z_sample, num_class+num_multi_hot, dim=0)
-
-            # sample all one-hot labels and new multi-class labels
-            y_sample = torch.cat(
-                [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
-                dim=0).repeat(num_styles, 1).to(device)
-
-            # generate 10 styles of from random z for each class in y_sample
-            x_sample = generator(z_sample, y_sample)
-
-            # reshape into 10xnum_class image
-            x_grid = make_grid(x_sample, nrow=num_class+num_multi_hot)
-
-            # save image
-            save_image(x_grid, '{}{}_epoch_{}.png'.format(
-                out_dir, model_name, e+1))
+        # # create random generator images for only the last few epochs
+        # if (e + 1) > (num_epoch - 10):
+        #     # sample num_styles from z and repeat rows for all labels
+        #     z_sample = z_dist.sample()[:num_styles].to(device)
+        #     z_sample = torch.repeat_interleave(
+        #         z_sample, num_class+num_multi_hot, dim=0)
+        #
+        #     # sample all one-hot labels and new multi-class labels
+        #     y_sample = torch.cat(
+        #         [torch.eye(num_class), y_dist.sample()[:num_multi_hot]],
+        #         dim=0).repeat(num_styles, 1).to(device)
+        #
+        #     # generate 10 styles of from random z for each class in y_sample
+        #     x_sample = generator(z_sample, y_sample)
+        #
+        #     # reshape into 10xnum_class image
+        #     x_grid = make_grid(x_sample, nrow=num_class+num_multi_hot)
+        #
+        #     # save image
+        #     save_image(x_grid, '{}{}_epoch_{}.png'.format(
+        #         out_dir, model_name, e+1))
 
         # save checkpoints
         torch.save(critic.state_dict(), '{}{}_critic.pt'.format(
