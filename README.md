@@ -12,10 +12,11 @@ PyTorch implementation of Conditional [Improved Wasserstein Generative Adversari
 conditional-gan/
 ├── conditional_gan
 │   ├── artifacts
-│   │   ├── pan_02_classifier.pt
-│   │   ├── pan_02_critic.pt
-│   │   ├── pan_02_generator.pt
-│   │   ├── pan_02_gif_cols.txt
+│   │   ├── pan_00_classifier.pt
+│   │   ├── pan_00_critic.pt
+│   │   ├── pan_00_generator.pt
+│   │   ├── pan_00_gen.gif
+│   │   ├── pan_00_gif_cols.txt
 │   │   ├── readme_gen.gif
 │   │   └── readme_gen_gif_cols.txt
 │   ├── config.yaml
@@ -29,12 +30,14 @@ conditional-gan/
 │   └── util
 │       ├── distributions.py
 │       └── __init__.py
+├── docker-compose.yaml
+├── Dockerfile
 ├── README.md
 ├── requirements.txt
 └── server
+    ├── api.py
     ├── gen_out.png
     ├── __init__.py
-    ├── main.py
     └── wrappers.py
 ```
 
@@ -91,19 +94,23 @@ $ python train.py
 
 The training script will generate several files to an output directory (local `artifacts/` directory by default) including example images and model parameter files.
 
-### Serving:
+### Serving with Python:
 
-This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model.
-
-To spin up the server application on port 8080, navigate to the `server` directory and run:
+This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. The following command will spin up the API application on `http://0.0.0.0:8080`.
 
 ```
-$ python main.py -p 8080
+$ python api.py
 ```
 
 Swagger UI interactive API documentation can be viewed at the `/docs` endpoint.
 
-When using the `/api/generate-image` endpoint, the server application uses a `*_generator.pt` model artifact (written to the `artifacts/` directory after running the training script) to load a pre-trained generator model, computes an output given a style and label vector, writes this output locally as an image file, and returns this image file as a [`fastapi.response.FileResponse`](https://fastapi.tiangolo.com/advanced/custom-response/#fileresponse) back to the client.  
+### Serving with Docker:
+
+First, make sure you have [Docker](https://www.docker.com/) installed along with the [docker-compose](https://docs.docker.com/compose/install/) cli. Run the following command from the top level of this project directory to build the required Docker image (on the first run only), and spin up an isolated container that runs the API application on `http://0.0.0.0:8080`.
+
+```
+$ docker-compose up
+```
 
 ### References:
 
