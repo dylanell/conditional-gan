@@ -2,9 +2,9 @@
 
 PyTorch implementation of Conditional [Improved Wasserstein Generative Adversarial Network (GAN)](https://arxiv.org/pdf/1704.00028.pdf) on the [MNIST Dataset](http://yann.lecun.com/exdb/mnist/). The conditional GAN introduces a one-hot vector that is also provided as input to the generator of the GAN along with the original z input sample from the multivariate normal distribution. This additional one-hot vector takes on the role of encoding the "class" for the sample to be generated while the z vector controls the "style". Therefore, by individually altering the z vector or the one-hot vector provided to the generator, one can control the "style" and the "label" for generated samples, respectively.
 
-| ![](conditional_gan/artifacts/readme_gen.gif) |
+| ![](conditional_gan/artifacts/gen.gif) |
 | :-: |
-| *Generator outputs with constant inputs during training. Column labels can be found in [`readme_gen_gif_cols.txt`](https://github.com/dylanell/conditional-gan/blob/main/artifacts/readme_gen_gif_cols.txt)* |
+| *Generator outputs with constant inputs during training. Column labels can be found in [`gen_gif_cols.txt`](https://github.com/dylanell/conditional-gan/blob/main/artifacts/readme_gen_gif_cols.txt)* |
 
 ### Project Structure:
 
@@ -12,13 +12,11 @@ PyTorch implementation of Conditional [Improved Wasserstein Generative Adversari
 conditional-gan/
 ├── conditional_gan
 │   ├── artifacts
-│   │   ├── pan_00_classifier.pt
-│   │   ├── pan_00_critic.pt
-│   │   ├── pan_00_generator.pt
-│   │   ├── pan_00_gen.gif
-│   │   ├── pan_00_gif_cols.txt
-│   │   ├── readme_gen.gif
-│   │   └── readme_gen_gif_cols.txt
+│   │   ├── classifier.pt
+│   │   ├── critic.pt
+│   │   ├── generator.pt
+│   │   ├── gen.gif
+│   │   └── gif_cols.txt
 │   ├── config.yaml
 │   ├── data
 │   │   ├── datasets.py
@@ -84,7 +82,7 @@ If you would like to re-use the code here to work with other image datasets, jus
 
 ### Training:
 
-Model and training files for the Conditional GAN are located within the `conditional_gan` model directory. Configuration and training parameters can be controlled by editing the `config.yaml` within the model directory.
+Model and training files for the Conditional GAN are located within the `conditional_gan` subdirectory. Configuration and training parameters can be controlled by editing the `config.yaml` within this directory.
 
 To train the model, navigate to the `conditional_gan` directory and run:
 
@@ -92,7 +90,7 @@ To train the model, navigate to the `conditional_gan` directory and run:
 $ python train.py
 ```
 
-The training script will generate several files to an output directory (local `artifacts/` directory by default) including example images and model parameter files.
+The training script will generate model artifacts to the `artifacts/` directory.
 
 ### Serving with Python:
 

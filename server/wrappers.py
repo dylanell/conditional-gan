@@ -15,14 +15,12 @@ from conditional_gan.modules import ConditionalGenerator
 
 class GeneratorWrapper():
     def __init__(self, config):
-        out_dir = config['output_directory']
-        model_name = config['model_name']
         num_class = config['number_classes']
         input_dim = config['input_dimensions']
         z_dim = config['z_dimension']
 
         # model artifact file path
-        model_file = '../conditional_gan/{}{}_generator.pt'.format(out_dir, model_name)
+        model_file = '../conditional_gan/artifacts/generator.pt'
 
         # initialize and load model
         self._generator = ConditionalGenerator(z_dim, num_class, input_dim[-1])

@@ -19,8 +19,6 @@ with open('config.yaml', 'r') as fp:
     config = yaml.load(fp, Loader=yaml.FullLoader)
 
 data_dir = config['dataset_directory']
-out_dir = config['output_directory']
-model_name = config['model_name']
 acceleration = config['acceleration']
 num_work = config['number_workers']
 out_freq = config['output_frequency']
@@ -129,7 +127,7 @@ def main():
     for sample, label in zip(samples, labels):
         static_labels[sample.item()].append(label.item())
     print('[INFO]: static labels: {}'.format(static_labels))
-    with open('{}{}_gif_cols.txt'.format(out_dir, model_name), 'w') as fp:
+    with open('artifacts/gif_cols.txt', 'w') as fp:
         for col, label in static_labels.items():
             fp.write('{}: {}\n'.format(col, label))
 
@@ -241,8 +239,7 @@ def main():
                 # save image
                 step = e * (int(len(dataset_dct['train_set']) / batch_size)\
                     + 1) + (i + 1)
-                save_image(x_grid, '{}{}_step_{}.png'.format(
-                    out_dir, model_name, step))
+                save_image(x_grid, 'artifacts/step_{}.png'.format(step))
 
         # end epoch
 
@@ -277,16 +274,12 @@ def main():
         #     x_grid = make_grid(x_sample, nrow=num_class+num_multi_hot)
         #
         #     # save image
-        #     save_image(x_grid, '{}{}_epoch_{}.png'.format(
-        #         out_dir, model_name, e+1))
+        #     save_image(x_grid, 'artifacts/epoch_{}.png'.format(e+1))
 
         # save checkpoints
-        torch.save(critic.state_dict(), '{}{}_critic.pt'.format(
-            out_dir, model_name))
-        torch.save(generator.state_dict(), '{}{}_generator.pt'.format(
-            out_dir, model_name))
-        torch.save(classifier.state_dict(), '{}{}_classifier.pt'.format(
-            out_dir, model_name))
+        torch.save(critic.state_dict(), 'artifacts/critic.pt')
+        torch.save(generator.state_dict(), 'artifacts/generator.pt')
+        torch.save(classifier.state_dict(), 'artifacts/classifier.pt')
 
 
 def cleanup():
@@ -295,7 +288,7 @@ def cleanup():
     """
 
     # get all images that match wildcard string to make gif
-    gif_files = glob.glob('{}{}_step_*.png'.format(out_dir, model_name))
+    gif_files = glob.glob('artifacts/step_*.png')
 
     # sort filenames by numbers
     gif_files.sort(key=lambda f: int(f.split('_')[-1].split('.')[0]))
@@ -304,8 +297,7 @@ def cleanup():
     img_list = [imageio.imread(img) for img in gif_files]
 
     # write image list to gif
-    imageio.mimwrite(
-        '{}{}_gen.gif'.format(out_dir, model_name), img_list, fps=200)
+    imageio.mimwrite('artifacts/gen.gif', img_list, fps=200)
 
     # delete files used to make gif
     for file in gif_files:
