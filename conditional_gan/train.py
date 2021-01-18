@@ -179,9 +179,7 @@ def main():
                 outputs=int_c,
                 inputs=int_x,
                 grad_outputs=torch.ones_like(int_c),
-                create_graph=True,
-                retain_graph=True,
-                only_inputs=True
+                create_graph=True
             )[0]
 
             # compute wasserstein distance
