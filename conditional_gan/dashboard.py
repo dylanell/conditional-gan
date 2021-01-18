@@ -1,15 +1,18 @@
-import yaml
-import torch
 import dash
+import dash_daq as daq
 import dash_html_components as html
 import dash_core_components as dcc
-import dash_daq as daq
 from dash.dependencies import Input, Output
+import base64
+import torch
+from torchvision.utils import save_image
+import yaml
 
 from modules import ConditionalGenerator
 
 num_class = 10
 
+# builds a centered row of 'num_class' horizontal sliders
 def multi_hot_slider(num_class):
     slider_width = 15
     slider_height = 75
@@ -56,22 +59,37 @@ def main():
     # parse configuration file
     with open('config.yaml', 'r') as fp:
         config = yaml.load(fp, Loader=yaml.FullLoader)
-
     num_class = config['number_classes']
     input_dim = config['input_dimensions']
     z_dim = config['z_dimension']
 
     # model artifact file path
-    model_file = 'artifacts/generator.pt'
+    model_file = '../conditional_gan/artifacts/generator.pt'
 
     # initialize and load model
     generator = ConditionalGenerator(z_dim, num_class, input_dim[-1])
-    generator.load_state_dict(
-        torch.load(model_file, map_location=torch.device('cpu')))
+    generator.load_state_dict(torch.load(
+        model_file, map_location=torch.device('cpu')))
 
     # initialize style vector distribution
     style_dist = torch.distributions.normal.Normal(
         torch.zeros(1, z_dim), torch.ones(1, z_dim))
+
+    # sample initial style vector
+    style_vec = style_dist.sample()
+
+    # sample initial label vector
+    label_vec = torch.zeros((1, num_class))
+    label_vec[0, 0] = 1
+
+    # generate sample
+    gen_out = generator(style_vec, label_vec)[0]
+
+    # save generated sample to image file
+    save_image(gen_out, 'artifacts/dashboard_gen_out.png')
+
+    gen_out_base64 = base64.b64encode(
+        open('artifacts/dashboard_gen_out.png', 'rb').read()).decode('ascii')
 
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -88,16 +106,43 @@ def main():
         html.Br(),
         multi_hot_slider(num_class),
         html.Br(),
-        html.Div(id='output')
+        html.Div([
+            html.Img(
+                src='data:image/png;base64,{}'.format(gen_out_base64),
+                id='gen_out',
+                style={
+                    'width': '400px',
+                    'height': '400px'
+                }
+            )
+        ], style={
+            'text-align': 'center',
+            'position': 'relative',
+            'top': '30px'
+        }),
     ])
 
-    app.run_server(debug=True)
 
     @app.callback(
-    Output('output', 'children'),
-    [Input('0-slider', 'value')])
-    def update_output(value):
-        return 'The slider is currently at {}.'.format(value)
+        Output('gen_out', 'src'),
+        [Input('{}-slider'.format(str(i)), 'value') for i in range(num_class)])
+    def update_output(*values):
+        # rescale slider values to probability distribution
+        label_vec = torch.tensor(list(values)).unsqueeze(0).float()
+        label_vec /= torch.sum(label_vec)
+
+        # generate sample
+        gen_out = generator(style_vec, label_vec)[0]
+
+        # save generated sample to image file
+        save_image(gen_out, 'artifacts/dashboard_gen_out.png')
+
+        gen_out_base64 = base64.b64encode(
+            open('artifacts/dashboard_gen_out.png', 'rb').read()).decode('ascii')
+
+        return 'data:image/png;base64,{}'.format(gen_out_base64)
+
+    app.run_server(debug=True)
 
 
 if __name__ == '__main__':
