@@ -112,8 +112,8 @@ def main():
                 src='data:image/png;base64,{}'.format(gen_out_base64),
                 id='gen_out',
                 style={
-                    'width': '400px',
-                    'height': '400px'
+                    'width': '300px',
+                    'height': '300px'
                 }
             )
         ], style={
@@ -143,7 +143,7 @@ def main():
             # update global style_vec variable out of scope
             # NOTE: this is bad and dash warns against this but will work
             # good enough for the purposes of model debugging/exploration
-            # with a single user in this project  
+            # with a single user in this project
             global style_vec
             style_vec = style_dist.sample()
 
