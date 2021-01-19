@@ -28,6 +28,7 @@ conditional-gan/
 │   │   ├── gen.gif
 │   │   └── gif_cols.txt
 │   ├── config.yaml
+│   ├── dashboard.py
 │   ├── data
 │   │   ├── datasets.py
 │   │   ├── __init__.py
@@ -44,7 +45,6 @@ conditional-gan/
 ├── requirements.txt
 └── server
     ├── api.py
-    ├── gen_out.png
     ├── __init__.py
     └── wrappers.py
 ```
