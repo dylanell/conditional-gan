@@ -98,13 +98,23 @@ $ python train.py
 
 The training script will generate model artifacts to the `artifacts/` directory. Configuration and training parameters can be controlled by editing `config.yaml`.
 
+### Generator Model Dashboard:
+
+The `dashboard.py` script uses the [Dash](https://dash.plotly.com/) package to create a simple generator GUI, allowing you to manually control generator inputs and visualize their corresponding generated images. Navigate to the `conditional_gan` directory and run the following command to access the generator dashboard at `http://localhost:8050/` in a browser.
+
+```
+$ python dashboard.py
+```
+
+Move the sliders to generate a "one-hot" (or even "multi-hot") label vector, or press the "Sample New Style" button to sample a new style vector. The dashboard automatically generates the corresponding new output image any time these inputs are changed. One interesting thing to try is to give the generator "multi-hot" labels to see if it can create "new" digits conditioned on a label vector that represents two or more labels.   
+
 ### Serving:
 
-This project uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. Swagger UI interactive API documentation can be viewed at the `/docs` endpoint. You can view and test endpoints by navigating to [`http://0.0.0.0:8080/docs`](http://0.0.0.0:8080/docs) in a browser while the API application is running.
+This project also uses [FastAPI](https://fastapi.tiangolo.com/) to setup a model serving API for a pre-trained generator model. Swagger UI interactive API documentation can be viewed at `http://localhost:8080/docs` on a browser.
 
 Serve with Python:
 
-Navigate to the `server` directory and run the following command to spin up the API server on `http://0.0.0.0:8080`.
+Navigate to the `server` directory and run the following command to spin up the API server on `http://localhost:8080/`.
 
 ```
 $ python api.py
@@ -112,7 +122,7 @@ $ python api.py
 
 Serve with Docker:
 
-Make sure you have [Docker](https://www.docker.com/) installed along with the [docker-compose](https://docs.docker.com/compose/install/) cli. Run the following command from the top level of this project directory to spin up a container that runs the API server on `http://0.0.0.0:8080`. The first run may take a bit to build the new Docker image with all the Python package dependencies.
+Make sure you have [Docker](https://www.docker.com/) installed along with the [docker-compose](https://docs.docker.com/compose/install/) cli. Run the following command from the top level of this project directory to spin up a container that runs the API server on `http://localhost:8080/`. The first run may take a bit to build the new Docker image with all the Python package dependencies.
 
 ```
 $ docker-compose up
