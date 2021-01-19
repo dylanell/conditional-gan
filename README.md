@@ -1,12 +1,18 @@
 # conditional-gan
 
-This project contains a PyTorch implementation of a Conditional [Improved Wasserstein Generative Adversarial Network (GAN)](https://arxiv.org/pdf/1704.00028.pdf) trained on the [MNIST Dataset](http://yann.lecun.com/exdb/mnist/), combined with a bare-bones generator model serving API (run natively or with Docker).
+This project contains a PyTorch implementation of a Conditional [Improved Wasserstein Generative Adversarial Network (GAN)](https://arxiv.org/pdf/1704.00028.pdf) trained on the [MNIST Dataset](http://yann.lecun.com/exdb/mnist/), combined with a simple model serving API for the GAN generator network.
 
-The conditional GAN introduces a one-hot vector that is combined with the original randomly sampled input vector to the generator of the GAN. This additional one-hot vector takes on the role of encoding the "class" of a generated sample while the z vector controls the "style". One can therefore have individual control of both the "style" and the "label" for generated samples, respectively.
+Compared to a regular GAN, the generator of a conditional GAN takes two inputs; the original randomly sampled input vector plus an additional randomly sampled one-hot vector. This additional one-hot vector takes on the role of representing the "class" of a generated sample while the z vector is left to represent the "style". One can therefore individually control both the "style" and the "label" for generated samples, respectively, by changing these two generator input vectors.
+
+Instead of training a "vanilla" conditional GAN in this project, we follow some of the techniques used in [this paper](https://arxiv.org/pdf/1706.07068.pdf) to observe the effects of adding an objective that promotes "creativity" in the generator model for a GAN, dubbed the "Creative GAN (CAN)". Unlike a standard conditional GAN where the generator model is trained to minimize classifier error for conditionally generated images labeled by the "class" vector inputs, the CAN is trained to maximize classifier error for all generated samples. The motivation is that by maximally "confusing" the classifier, while still fooling the critic into thinking a generated sample is real, the generator will learn to "create" new instances that "fall within the gaps" of the classifier, which is simultaneously trained on real images. The CAN paper is trained and evaluated on a dataset of art images, which can be a little subjective when it comes to defining what is "creatively" novel. For this project, we would like to explore the effects of adding this "creativity" objective for a dataset in which class differences are very succinct, like MNIST.
+
+Training the CAN on MNIST results in a generator model that doesn't generate very "creative" looking digits at all. This result is somewhat unsurprising if you think conceptually about what it means to maximize the confusion for a classifier trained on a dataset of real samples. In the CAN paper, the authors aim to achieve this by minimizing the cross entropy between the classifier output on generated images and the uniform class distribution ("all-hot" label vector), resulting in an optimization problem that essentially asks the generator to create realistic looking digits (from the critic's perspective) that look like all digits at once. This is a pretty difficult task for the generator to solve.
+
+Instead of following the "maximal confusion" objective from the CAN paper directly, we relax the rules slightly to allow for randomly sampled "multi-hot" or "k-hot" labels for generated samples, where k can be anything from 1 to the number of classes. Additionally, we utilize the conditional GAN architecture so that we can control these "multi-hot" conditional inputs, therefore controlling the "creativity" at the output of the generator model. To do this, we parameterize a custom "k-hot" categorical meta-distribution by a "pan-classness" parameter `pan`, which controls the tendency to either sample more "one-hot" distributions (standard conditional GAN training) or more "all-hot" distributions (standard CAN training). We can therefore train a CAN with "k-hot" generator labels where k is more often a moderate value less than the total number of classes, but also not always just 1. The gif below shows a conditional GAN trained in this fashion, where some of the conditional label vectors are "2-hot" label.   
 
 | ![](conditional_gan/artifacts/gen.gif) |
 | :-: |
-| *Generator outputs with constant inputs during training. Column labels can be found in [`gen_gif_cols.txt`](https://github.com/dylanell/conditional-gan/blob/main/conditional_gan/artifacts/gif_cols.txt)* |
+| *Generator outputs with 20 constant label inputs during training. Column labels can be found in [`gen_gif_cols.txt`](https://github.com/dylanell/conditional-gan/blob/main/conditional_gan/artifacts/gif_cols.txt)* |
 
 ### Project Structure:
 
@@ -106,7 +112,7 @@ The `dashboard.py` script uses the [Dash](https://dash.plotly.com/) package to c
 $ python dashboard.py
 ```
 
-Move the sliders to generate a "one-hot" (or even "multi-hot") label vector, or press the "Sample New Style" button to sample a new style vector. The dashboard automatically generates the corresponding new output image any time these inputs are changed. One interesting thing to try is to give the generator "multi-hot" labels to see if it can create "new" digits conditioned on a label vector that represents two or more labels.   
+Move the sliders to generate "one-hot" (or "multi-hot") label vectors, or press the "Sample New Style" button to sample new style vectors. The dashboard automatically generates the corresponding new output image any time these inputs are changed. We can try to control the "creativity" at the output of the generator by providing it with "multi-hot" labels to see if it can create "new" digits from combined generator features.   
 
 ### Serving:
 
