@@ -10,7 +10,6 @@ import yaml
 
 from modules import ConditionalGenerator
 
-num_class = 10
 
 # builds a centered row of 'num_class' horizontal sliders
 def multi_hot_slider(num_class):
@@ -55,33 +54,35 @@ def multi_hot_slider(num_class):
         }
     )
 
+
+# parse configuration file
+with open('config.yaml', 'r') as fp:
+    config = yaml.load(fp, Loader=yaml.FullLoader)
+num_class = config['number_classes']
+input_dim = config['input_dimensions']
+z_dim = config['z_dimension']
+
+# model artifact file path
+model_file = '../conditional_gan/artifacts/generator.pt'
+
+# initialize and load model
+generator = ConditionalGenerator(z_dim, num_class, input_dim[-1])
+generator.load_state_dict(torch.load(
+    model_file, map_location=torch.device('cpu')))
+
+# initialize style vector distribution
+style_dist = torch.distributions.normal.Normal(
+    torch.zeros(1, z_dim), torch.ones(1, z_dim))
+
+# sample initial style vector
+style_vec = style_dist.sample()
+
+# sample initial label vector
+label_vec = torch.zeros((1, num_class))
+label_vec[0, 0] = 1
+
+
 def main():
-    # parse configuration file
-    with open('config.yaml', 'r') as fp:
-        config = yaml.load(fp, Loader=yaml.FullLoader)
-    num_class = config['number_classes']
-    input_dim = config['input_dimensions']
-    z_dim = config['z_dimension']
-
-    # model artifact file path
-    model_file = '../conditional_gan/artifacts/generator.pt'
-
-    # initialize and load model
-    generator = ConditionalGenerator(z_dim, num_class, input_dim[-1])
-    generator.load_state_dict(torch.load(
-        model_file, map_location=torch.device('cpu')))
-
-    # initialize style vector distribution
-    style_dist = torch.distributions.normal.Normal(
-        torch.zeros(1, z_dim), torch.ones(1, z_dim))
-
-    # sample initial style vector
-    style_vec = style_dist.sample()
-
-    # sample initial label vector
-    label_vec = torch.zeros((1, num_class))
-    label_vec[0, 0] = 1
-
     # generate sample
     gen_out = generator(style_vec, label_vec)[0]
 
@@ -120,16 +121,31 @@ def main():
             'position': 'relative',
             'top': '30px'
         }),
+        html.P(id='placeholder')
     ])
 
 
     @app.callback(
         Output('gen_out', 'src'),
-        [Input('{}-slider'.format(str(i)), 'value') for i in range(num_class)])
+        [Input('{}-slider'.format(str(i)), 'value') for i in range(num_class)]\
+        + [Input('style_button', 'n_clicks')])
     def update_output(*values):
+        # parse inputs
+        label_vec = values[:-1]
+
         # rescale slider values to probability distribution
-        label_vec = torch.tensor(list(values)).unsqueeze(0).float()
+        label_vec = torch.tensor(label_vec).unsqueeze(0).float()
         label_vec /= torch.sum(label_vec)
+
+        # if style button triggered, sample new style
+        ctx = dash.callback_context
+        if ctx.triggered[0]['prop_id'].split('.')[0] == 'style_button':
+            # update global style_vec variable out of scope
+            # NOTE: this is bad and dash warns against this but will work
+            # good enough for the purposes of model debugging/exploration
+            # with a single user in this project  
+            global style_vec
+            style_vec = style_dist.sample()
 
         # generate sample
         gen_out = generator(style_vec, label_vec)[0]
@@ -141,6 +157,24 @@ def main():
             open('artifacts/dashboard_gen_out.png', 'rb').read()).decode('ascii')
 
         return 'data:image/png;base64,{}'.format(gen_out_base64)
+
+    # @app.callback(
+    #     Output('gen_out', 'src'),
+    #     Input('style_button', 'n_clicks'))
+    # def update_style():
+    #     # sample new style vector
+    #     style_vec = style_dist.sample()
+    #
+    #     # generate sample
+    #     gen_out = generator(style_vec, label_vec)[0]
+    #
+    #     # save generated sample to image file
+    #     save_image(gen_out, 'artifacts/dashboard_gen_out.png')
+    #
+    #     gen_out_base64 = base64.b64encode(
+    #         open('artifacts/dashboard_gen_out.png', 'rb').read()).decode('ascii')
+    #
+    #     return 'data:image/png;base64,{}'.format(gen_out_base64)
 
     app.run_server(debug=True)
 
