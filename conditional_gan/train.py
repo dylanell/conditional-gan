@@ -27,6 +27,7 @@ input_dim = config['input_dimensions']
 batch_size = config['batch_size']
 num_epoch = config['number_epochs']
 learn_rate = config['learning_rate']
+weight_decay = config['weight_decay']
 z_dim = config['z_dimension']
 pan = config['pan_classness']
 
@@ -81,9 +82,12 @@ def main():
         torch.ones(batch_size, 1, 1, 1))
 
     # initialize optimizers
-    critic_opt = torch.optim.Adam(critic.parameters(), lr=learn_rate)
-    generator_opt = torch.optim.Adam(generator.parameters(), lr=learn_rate)
-    classifier_opt = torch.optim.Adam(classifier.parameters(), lr=learn_rate)
+    critic_opt = torch.optim.Adam(
+        critic.parameters(), lr=learn_rate, weight_decay=weight_decay)
+    generator_opt = torch.optim.Adam(
+        generator.parameters(), lr=learn_rate, weight_decay=weight_decay)
+    classifier_opt = torch.optim.Adam(
+        classifier.parameters(), lr=learn_rate, weight_decay=weight_decay)
 
     # cross entropy loss for classifier
     classifier_loss_fn = torch.nn.CrossEntropyLoss()
