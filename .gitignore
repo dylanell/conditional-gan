@@ -1,3 +1,6 @@
+# VSCode
+.vscode/
+
 # conditional_gan artifacts
 conditional_gan/artifacts/*step_*.png
 conditional_gan/artifacts/dashboard_gen_out.png
